@@ -68,7 +68,6 @@ def main():
             y_train, y_test = y[training_indices_2], y[test_indices_2]
             for a in reg_factors:
                 for b in reg_factors:
-                    print(b)
                     model_nowarmup = MVENetwork(X=x_train, Y=y_train, n_hidden_mean=n_hidden,
                                                 n_hidden_var=n_hidden, n_epochs=n_epochs, reg_mean=a, reg_var=b,
                                                 batch_size=None, verbose=0, warmup=0)
