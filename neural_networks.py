@@ -181,7 +181,7 @@ def train_network(*, X_train, Y_train, n_hidden_mean, n_hidden_var, n_epochs,
 
     # Without a warmup, we simultaneously learn the mean and variance
     if not warmup:
-        model.compile(loss=loss, optimizer=keras.optimizers.Adam(clipvalue=10))
+        model.compile(loss=loss, optimizer=keras.optimizers.Adam(clipvalue=5))
         model.fit(X_train, Y_train, batch_size=batch_size, epochs=n_epochs,
                   verbose=verbose)
         return model
@@ -191,7 +191,7 @@ def train_network(*, X_train, Y_train, n_hidden_mean, n_hidden_var, n_epochs,
         if layer.name[0] == 'v':
             layer.trainable = False
 
-    model.compile(loss=loss, optimizer=keras.optimizers.Adam(clipvalue=10))
+    model.compile(loss=loss, optimizer=keras.optimizers.Adam(clipvalue=5))
     model.fit(X_train, Y_train, batch_size=batch_size, epochs=n_epochs,
               verbose=verbose)
     logmse = np.log(np.mean(np.square(model.predict(X_train, verbose=0)[:, 0] - Y_train)))
@@ -210,7 +210,7 @@ def train_network(*, X_train, Y_train, n_hidden_mean, n_hidden_var, n_epochs,
                 layer.trainable = False
 
     # Compile and train the final model
-    model.compile(loss=loss, optimizer=keras.optimizers.Adam(clipvalue=10))
+    model.compile(loss=loss, optimizer=keras.optimizers.Adam(clipvalue=5))
     model.fit(X_train, Y_train, batch_size=batch_size, epochs=n_epochs,
               verbose=verbose)
     return model
