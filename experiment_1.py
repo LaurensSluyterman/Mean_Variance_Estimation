@@ -33,7 +33,7 @@ def main():
     n_hidden = np.array(args.n_hidden)
     number_of_outer_folds = args.number_of_folds_out
     number_of_inner_folds = args.number_of_folds_in
-    reg_factors = [1e-4, 1e-3, 1e-2, 1e-1, 1]
+    reg_factors = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
     results_UCI = {'LL_nowarmup_same': np.zeros(number_of_outer_folds),
                             'LL_nowarmup_separate': np.zeros(number_of_outer_folds),
                             'LL_warmup_same': np.zeros(number_of_outer_folds),
