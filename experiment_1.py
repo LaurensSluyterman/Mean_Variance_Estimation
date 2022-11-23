@@ -1,7 +1,7 @@
 def main():
     import sys
     sys.path.append('/Users/laurens/OneDrive/Onedrivedocs/PhD/Code/2022/data_noise_variance')
-    import os  
+    import os
     import numpy as np
     import argparse
     import keras.backend as K
@@ -35,27 +35,28 @@ def main():
     number_of_inner_folds = args.number_of_folds_in
     reg_factors = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
     results_UCI = {'LL_nowarmup_same': np.zeros(number_of_outer_folds),
-                            'LL_nowarmup_separate': np.zeros(number_of_outer_folds),
-                            'LL_warmup_same': np.zeros(number_of_outer_folds),
-                            'LL_warmup_separate': np.zeros(number_of_outer_folds),
-                            'LL_warmup_fixedmean_same': np.zeros(number_of_outer_folds),
-                            'LL_warmup_fixedmean_separate': np.zeros(number_of_outer_folds),
-                            'rmse_nowarmup_same': np.zeros(number_of_outer_folds),
-                            'rmse_nowarmup_separate': np.zeros(number_of_outer_folds),
-                            'rmse_warmup_same': np.zeros(number_of_outer_folds),
-                            'rmse_warmup_separate': np.zeros(number_of_outer_folds),
-                            'rmse_warmup_fixedmean_same': np.zeros(number_of_outer_folds),
-                            'rmse_warmup_fixedmean_separate': np.zeros(number_of_outer_folds),
-                            'regconstant_nowarmup_same': np.zeros((number_of_outer_folds, 2)),
-                            'regconstant_nowarmup_separate': np.zeros((number_of_outer_folds, 2)),
-                            'regconstant_warmup_same': np.zeros((number_of_outer_folds, 2)),
-                            'regconstant_warmup_separate': np.zeros((number_of_outer_folds, 2)),
-                            'regconstant_warmup_fixedmean_same': np.zeros((number_of_outer_folds, 2)),
-                            'regconstant_warmup_fixedmean_separate': np.zeros((number_of_outer_folds, 2)),
-                            'epochs':n_epochs,
-                            'architecture':n_hidden,
-                            }
-    for i, (training_indices, test_indices) in enumerate(KFold(number_of_outer_folds, shuffle=True, random_state=1).split(X)):
+                   'LL_nowarmup_separate': np.zeros(number_of_outer_folds),
+                   'LL_warmup_same': np.zeros(number_of_outer_folds),
+                   'LL_warmup_separate': np.zeros(number_of_outer_folds),
+                   'LL_warmup_fixedmean_same': np.zeros(number_of_outer_folds),
+                   'LL_warmup_fixedmean_separate': np.zeros(number_of_outer_folds),
+                   'rmse_nowarmup_same': np.zeros(number_of_outer_folds),
+                   'rmse_nowarmup_separate': np.zeros(number_of_outer_folds),
+                   'rmse_warmup_same': np.zeros(number_of_outer_folds),
+                   'rmse_warmup_separate': np.zeros(number_of_outer_folds),
+                   'rmse_warmup_fixedmean_same': np.zeros(number_of_outer_folds),
+                   'rmse_warmup_fixedmean_separate': np.zeros(number_of_outer_folds),
+                   'regconstant_nowarmup_same': np.zeros((number_of_outer_folds, 2)),
+                   'regconstant_nowarmup_separate': np.zeros((number_of_outer_folds, 2)),
+                   'regconstant_warmup_same': np.zeros((number_of_outer_folds, 2)),
+                   'regconstant_warmup_separate': np.zeros((number_of_outer_folds, 2)),
+                   'regconstant_warmup_fixedmean_same': np.zeros((number_of_outer_folds, 2)),
+                   'regconstant_warmup_fixedmean_separate': np.zeros((number_of_outer_folds, 2)),
+                   'epochs': n_epochs,
+                   'architecture': n_hidden,
+                   }
+    for i, (training_indices, test_indices) in enumerate(
+            KFold(number_of_outer_folds, shuffle=True, random_state=1).split(X)):
         print(f'{i + 1}  of {number_of_outer_folds}')
         x, x_val = X[training_indices], X[test_indices]
         y, y_val = Y[training_indices], Y[test_indices]
@@ -92,7 +93,8 @@ def main():
         best_regularization_nowarmup_same = maxdiagonal(cvalidation_nowarmup)
         best_regularization_warmup_separate = list(max(cvalidation_warmup, key=cvalidation_warmup.get))
         best_regularization_warmup_same = maxdiagonal(cvalidation_warmup)
-        best_regularization_warmup_fixedmean_separate = list(max(cvalidation_warmup_fixedmean, key=cvalidation_warmup_fixedmean.get))
+        best_regularization_warmup_fixedmean_separate = list(
+            max(cvalidation_warmup_fixedmean, key=cvalidation_warmup_fixedmean.get))
         best_regularization_warmup_fixedmean_same = maxdiagonal(cvalidation_warmup_fixedmean)
 
         # Training models using the best found regularization constants
@@ -143,23 +145,24 @@ def main():
 
         # Calculating all relevant metrics for the 6 models
         results_UCI['LL_nowarmup_same'][i] = average_loglikelihood(y_val,
-                                                                            model_nowarmup_same.f(x_val),
-                                                                            model_nowarmup_same.sigma(x_val))
+                                                                   model_nowarmup_same.f(x_val),
+                                                                   model_nowarmup_same.sigma(x_val))
         results_UCI['LL_nowarmup_separate'][i] = average_loglikelihood(y_val,
-                                                                                model_nowarmup_separate.f(x_val),
-                                                                                model_nowarmup_separate.sigma(x_val))
+                                                                       model_nowarmup_separate.f(x_val),
+                                                                       model_nowarmup_separate.sigma(x_val))
         results_UCI['LL_warmup_same'][i] = average_loglikelihood(y_val,
-                                                                          model_warmup_same.f(x_val),
-                                                                          model_warmup_same.sigma(x_val))
+                                                                 model_warmup_same.f(x_val),
+                                                                 model_warmup_same.sigma(x_val))
         results_UCI['LL_warmup_separate'][i] = average_loglikelihood(y_val,
-                                                                              model_warmup_separate.f(x_val),
-                                                                              model_warmup_separate.sigma(x_val))
+                                                                     model_warmup_separate.f(x_val),
+                                                                     model_warmup_separate.sigma(x_val))
         results_UCI['LL_warmup_fixedmean_same'][i] = average_loglikelihood(y_val,
-                                                                                    model_warmup_fixedmean_same.f(x_val),
-                                                                                    model_warmup_fixedmean_same.sigma(x_val))
+                                                                           model_warmup_fixedmean_same.f(x_val),
+                                                                           model_warmup_fixedmean_same.sigma(x_val))
         results_UCI['LL_warmup_fixedmean_separate'][i] = average_loglikelihood(y_val,
-                                                                                        model_warmup_fixedmean_separate.f(x_val),
-                                                                                        model_warmup_fixedmean_separate.sigma(x_val))
+                                                                               model_warmup_fixedmean_separate.f(x_val),
+                                                                               model_warmup_fixedmean_separate.sigma(
+                                                                                   x_val))
 
         results_UCI['rmse_nowarmup_same'][i] = rmse(y_val, model_nowarmup_same.f(x_val))
         results_UCI['rmse_nowarmup_separate'][i] = rmse(y_val, model_nowarmup_separate.f(x_val))
