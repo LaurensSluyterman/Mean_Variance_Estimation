@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import stats
 
 
 def normalize(x, mean=None, std=None):
@@ -30,19 +29,32 @@ def load_data(directory):
 
 
 def average_loglikelihood(Y, f, sigma):
+    """Calculate the average loglikelihood"""
     N = len(Y)
     LL = - np.sum(np.log(sigma)) - N / 2 * np.log(2 * np.pi) - np.sum(0.5 * ((Y - f) / sigma)**2)
     return LL / N
 
-def individual_loglikelihood(Y, f, sigma):
-    N = len(Y)
-    LL = - (np.log(sigma)) - 1 / 2 * np.log(2 * np.pi) - (0.5 * ((Y - f) / sigma)**2)
-    return LL / N
 
 def rmse(A, B):
+    """Calculate the root-mean-squared error"""
     assert np.shape(A) == np.shape(B)
     return np.sqrt(np.mean((A-B)**2))
 
+
 def maxdiagonal(dictionary):
+    """Calculate the maximum value of a dictionary on the diagonal.
+
+    This is a somewhat specific function. The takes as input a
+    dictionary that has tuples (a,b) as keys and finds the maximum values
+    for the keys for which a==b. This is used in the hyperparameter search
+    to check which  equal regularization setting has the highest loglikelihood.
+
+    Arguments:
+        dictionary: A dictionary with as keys tuples (a,b) corresponding to the
+         regularization of the mean and the variance.
+
+    Returns:
+        Tuple (a, a) which corresponds to the key with the highest value.
+    """
     dictionary = dict(filter(lambda e: e[0][0] == e[0][1], dictionary.items()))
     return list(max(dictionary, key=dictionary.get))
