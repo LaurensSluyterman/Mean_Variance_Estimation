@@ -36,7 +36,7 @@ class MVENetwork:
 
     def __init__(self, *, X, Y, n_hidden_mean, n_hidden_var, n_epochs,
                  reg_mean=0, reg_var=0, batch_size=None, verbose=False,
-                 normalization=True, warmup=False, fixed_mean=True):
+                 normalization=True, warmup=False, fixed_mean=True, beta=None):
         """
         Arguments:
             X: The unnormalized training covariates.
@@ -77,7 +77,7 @@ class MVENetwork:
             Y = normalize(Y)
         model = train_network(X_train=X, Y_train=Y, n_hidden_mean=n_hidden_mean,
                               n_hidden_var=n_hidden_var,
-                              loss=get_loss(variance_transformation),
+                              loss=get_loss(variance_transformation, beta),
                               reg_mean=reg_mean,
                               reg_var=reg_var,
                               batch_size=batch_size,
@@ -216,14 +216,32 @@ def train_network(*, X_train, Y_train, n_hidden_mean, n_hidden_var, n_epochs,
     return model
 
 
-def get_loss(transform):
-    def negative_log_likelihood(targets, outputs):
-        """Calculate the negative loglikelihood."""
-        mu = outputs[..., 0:1]
-        var = transform(outputs[..., 1:2])
-        y = targets[..., 0:1]
-        loglik = - K.log(var) - K.square((y - mu)) / var
-        return - loglik
+def get_loss(transform, beta=None):
+    if beta:
+        def beta_nll_loss(targets, outputs, beta=beta):
+            """Compute beta-NLL loss
+            :param mean: Predicted mean of shape B x D
+            :param variance: Predicted variance of shape B x D
+            :param target: Target of shape B x D
+            :param beta: Parameter from range [0, 1] controlling relative
+                weighting between data points, where ‘0‘ corresponds to
+                high weight on low error points and ‘1‘ to an equal weighting.
+            :returns: Loss per batch element of shape B
+            """
+            mu = outputs[..., 0:1]
+            var = transform(outputs[..., 1:2])
+            loss = 0.5 * (K.square((targets - mu)) / var + K.log(var))
+            loss = loss * K.stop_gradient(var) ** beta
+            return loss
+        return beta_nll_loss
+    else:
+        def negative_log_likelihood(targets, outputs):
+            """Calculate the negative loglikelihood."""
+            mu = outputs[..., 0:1]
+            var = transform(outputs[..., 1:2])
+            y = targets[..., 0:1]
+            loglik = - K.log(var) - K.square((y - mu)) / var
+            return - loglik
     return negative_log_likelihood
 
 
