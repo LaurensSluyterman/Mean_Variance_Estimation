@@ -20,9 +20,9 @@ def main():
     parser.add_argument('-ne', '--number_of_epochs', type=int, default=1000,
                         help='Number of training epochs')
     parser.add_argument('-nfo', '--number_of_folds_out', type=int, default=10,
-                        help='Number of training epochs')
+                        help='Number of cv-folds outer loop')
     parser.add_argument('-nfi', '--number_of_folds_in', type=int, default=10,
-                        help='Number of training epochs')
+                        help='Number of cv-folds inner loop')
     args = parser.parse_args()
 
     dataset = args.dataset
