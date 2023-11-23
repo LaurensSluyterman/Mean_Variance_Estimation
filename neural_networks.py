@@ -201,7 +201,7 @@ def train_network(*, X_train, Y_train, n_hidden_mean, n_hidden_var, n_epochs,
     # Set the bias of the output variance to the logmse
     model.layers[-2].set_weights([model.layers[-2].get_weights()[0], np.array([logmse])])
 
-    # Unfreerze the variance layers
+    # Unfreeze the variance layers
     for layer in model.layers:
         layer.trainable = True
 
