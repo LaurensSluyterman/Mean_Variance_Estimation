@@ -6,9 +6,8 @@ tf.compat.v1.disable_eager_execution()  # Needed to prevent memory leaks
 import gc
 from tensorflow import keras
 from utils import normalize, reverse_normalized
-from keras.layers import Input, Dense, Concatenate, concatenate
+from keras.layers import Input, Dense, concatenate
 from keras.models import Model
-from sklearn.model_selection import train_test_split
 
 
 l2 = keras.regularizers.l2
@@ -65,6 +64,9 @@ class MVENetwork:
                 are updated simultaneously.
             fixed_mean (bool): In case of a warmup, this determines if the
                 mean estimate is kept fixed during the second training phase.
+            beta (float): If provided, the beta-NLL objective is used. This is
+                a type of interpolation between mse and NLL. The beta should
+                be between 0 (NLL) and 1 (MSE).
         """
         self._normalization = normalization
 
@@ -220,17 +222,10 @@ def get_loss(transform, beta=None):
     if beta:
         def beta_nll_loss(targets, outputs, beta=beta):
             """Compute beta-NLL loss
-            :param mean: Predicted mean of shape B x D
-            :param variance: Predicted variance of shape B x D
-            :param target: Target of shape B x D
-            :param beta: Parameter from range [0, 1] controlling relative
-                weighting between data points, where ‘0‘ corresponds to
-                high weight on low error points and ‘1‘ to an equal weighting.
-            :returns: Loss per batch element of shape B
             """
             mu = outputs[..., 0:1]
             var = transform(outputs[..., 1:2])
-            loss = 0.5 * (K.square((targets - mu)) / var + K.log(var))
+            loss = (K.square((targets - mu)) / var + K.log(var))
             loss = loss * K.stop_gradient(var) ** beta
             return loss
         return beta_nll_loss
